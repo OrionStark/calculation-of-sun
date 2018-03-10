@@ -15,5 +15,6 @@
   ],
   "dependencies": {
     "tap": "^11.1.2"
-  }
+  },
+  "readme": "README.md"
 }
