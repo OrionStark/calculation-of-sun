@@ -1,13 +1,19 @@
 {
-  "name": "astronomy-algorithm",
+  "name": "calculation-ofsun",
   "version": "1.0.0",
-  "description": "",
-  "main": "astronomy.js",
+  "description": "Sun calculation based on formula from http://aa.quae.nl/en/reken/zonpositie.html",
+  "main": "./dist/solar-calculation.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "No Test"
   },
-  "author": "Robby / OrionStark",
-  "license": "ISC",
+  "author": "Robby_OrionStark <robbybellamy6@gmail.com>",
+  "license": "MIT",
+  "keywords": [
+    "astronomy",
+    "sun calculation",
+    "science"
+  ],
   "dependencies": {
+    "tap": "^11.1.2"
   }
 }

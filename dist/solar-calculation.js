@@ -36,9 +36,9 @@ class Sunpositioning {
             C6: 0,
             EC: 0.0000
         };
-        this.earth_perihelion = 102.9373;
-        this.earth_obliquity = 23.4393 * (Math.PI / 180);
-        this.earth_obliquity_degrees = 23.4393;
+        this.earth_perihelion = 102.94719;
+        this.earth_obliquity = 23.44 * (Math.PI / 180);
+        this.earth_obliquity_degrees = 23.44;
         this.earth_sideral_time = {
             at_zero_long: 280.1470,
             rate_of_change: 360.9856235
