@@ -51,9 +51,23 @@ class Sunpositioning {
         this.CLIENT_LATITUDE = lat;
         this.CLIENT_LONGTITUDE = long;
         this.CLIENT_lw = -long;
-
+        let position = this.getSunPosition();
         return {
-            //
+            sun_position: {
+                azimuth: position.azimuth.degrees,
+                altitude: position.altitude.degrees
+            },
+            date: this.jdToDate(this.CLIENT_JD).toString(),
+            sunrise: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD).sunrise).toString(),
+            sunset: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD).sunset).toString(),
+            mean_anomaly: this.earthMeanAnomaly(this.CLIENT_JD),
+            solar_transit: this.solarTransit(this.CLIENT_JD),
+            equation_of_center: this.equation_of_center(this.CLIENT_JD),
+            h: this.getHourAngle(this.CLIENT_JD),
+            RA: this.rightAscension(this.CLIENT_JD),
+            clientJD: this.CLIENT_JD,
+            true_anomaly: this.earthTrueAnomaly(this.CLIENT_JD),
+            sideraltime: this.sideraltime(this.CLIENT_JD)
         };
     }
 
@@ -61,10 +75,11 @@ class Sunpositioning {
         return date.valueOf() / ( 1000 * 60 * 60 * 24 ) - 0.5 + this.JD1970;
     }
 
+    jdToDate(jd) {
+        return new Date((jd + 0.5 - this.JD1970) * ( 1000 * 60 * 60 * 24 ) )
+    }
+
     equation_of_center(jd) {
-        if (typeof this.jd == Date) {
-            jd = this.dateToJD(jd);
-        }
         /*
             the C4 - C6 are 0, so I just calculate for Coefficient 1 - 3.
         */
@@ -78,9 +93,6 @@ class Sunpositioning {
     }
 
     earthMeanAnomaly(jd) {
-        if (typeof jd == Date) {
-            jd = this.dateToJD(jd);
-        }
         return {
             degrees: ( 357.5291 + 0.98560028 * ( jd - this.JD2000 ) ) % 360,
             rad: (( 357.5291 + 0.98560028 * ( jd - this.JD2000 ) ) % 360) * (Math.PI / 180)
@@ -106,7 +118,7 @@ class Sunpositioning {
 
     rightAscension(jd) {
         let ecliptic_longtitude = this.eclipticLongtitude(jd);
-        let results = Math.atan2(Math.sin(ecliptic_longtitude.rad) * Math.cos(this.earth_obliquity));
+        let results = Math.atan2(Math.sin(ecliptic_longtitude.rad) * Math.cos(this.earth_obliquity), Math.cos(ecliptic_longtitude.rad));
         return {
             degrees: results / (Math.PI / 180),
             rad: results
@@ -122,48 +134,55 @@ class Sunpositioning {
         };
     }
 
-    getHourAngle(jd, long) {
-        let lw = -long;
-        let sideraltime = (this.earth_sideral_time.at_zero_long + 
-            this.earth_sideral_time.rate_of_change * (jd - this.JD2000) - lw) % 360;
-        return sideraltime - this.rightAscension(jd);
+    sideraltime(jd) {
+        let results = (this.earth_sideral_time.at_zero_long + this.earth_sideral_time.rate_of_change * (jd - this.JD2000) - (this.CLIENT_lw)) % 360;
+        return results;
+    }
+
+    getHourAngle(jd) {
+        return this.sideraltime(jd) - this.rightAscension(jd).degrees;
     }
 
     getSunPosition() {
-        let azimuth = Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD, this.CLIENT_LONGTITUDE) * Math.PI / 180), 
-                        Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_LONGTITUDE) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - 
-                    Math.tan(this.declination().rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180));
-        let altitude = Math.asin(Math.sin(this.CLIENT_LATITUDE * (Math.PI / 180)) * Math.sin(this.declination().rad) + 
-                        Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination().rad) * Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_LONGTITUDE) * Math.PI / 180));
         return {
             azimuth: {
-                rad: azimuth,
-                degrees: azimuth / (Math.PI / 180)
+                rad: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180), 
+                Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - Math.tan(this.declination(this.CLIENT_JD).rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180)),
+                degrees: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180), 
+                Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - 
+            Math.tan(this.declination(this.CLIENT_JD).rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180)) / (Math.PI / 180)
             },
             altitude: {
-                rad: altitude,
-                degrees: altitude / (Math.PI / 180)
+                rad: Math.asin(Math.sin(this.CLIENT_LATITUDE * (Math.PI / 180)) * Math.sin(this.declination(this.CLIENT_JD).rad) + 
+                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180)),
+                degrees: Math.asin(Math.sin(this.CLIENT_LATITUDE * (Math.PI / 180)) * Math.sin(this.declination(this.CLIENT_JD).rad) + 
+                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180)) / (Math.PI / 180)
             }
         }
     }
 
     solarTransit(jd) {
         let lw = this.CLIENT_lw;
-        function nx() { return ((jd - this.JD2000 - 0.0009 / 1 - (lw / 360))); }
+        let _JD2000 = this.JD2000
+        function nx() { return ((jd - _JD2000 - 0.0009) / 1 - (lw / 360)); }
         let n = Math.round(nx());
         function JDX() { return jd + 1 * ( n - nx() ); }
         let M = this.earthMeanAnomaly(JDX()).degrees;
-        let L = M + this.earth_perihelion + 180 % 360;
-
-        let JDtmp = JDX() + 0.0053 * Math.sin(M * Math.PI / 180) - 0.0068 * Math.sin((2 * L) * (Math.PI / 180));
-        let earth_true_anomaly_JDX = this.earthTrueAnomaly(JDtmp);
-        let ecliptic_longtitude_JDX = this.eclipticLongtitude(JDtmp);
-        let H = this.getHourAngle(jd, this.CLIENT_LONGTITUDE);
-
-        return JDtmp - ( H / 360 ) * 1;
+        let L = (M + this.earth_perihelion + 180) % 360;
+        let JDtmp = JDX() + 0.0053 * Math.sin(M * Math.PI / 180) - 0.0068 * Math.sin(2 * (L * (Math.PI / 180)));
+        return JDtmp - (0 / 360 ) * 1;
     }
 
     sunriseandsunset(jd) {
-
+        let jd_from_approx_transit = this.solarTransit(jd);
+        let sundeclination = this.declination(jd_from_approx_transit);
+        let Ht = Math.acos((-0.0146 - Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) * Math.sin(sundeclination.rad)) / 
+                    Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(sundeclination.rad));
+        return {
+            sunrise: jd_from_approx_transit - ((Ht / (Math.PI / 180)) / 360) * 1,
+            sunset: jd_from_approx_transit + ((Ht / (Math.PI / 180)) / 360) * 1
+        }
     }
 }
+
+module.exports = Sunpositioning;
