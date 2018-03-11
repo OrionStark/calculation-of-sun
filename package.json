@@ -4,7 +4,7 @@
   "description": "Sun calculation based on formula from http://aa.quae.nl/en/reken/zonpositie.html",
   "main": "./dist/solar-calculation.js",
   "scripts": {
-    "test": "No Test"
+    "test": "No Testing on it"
   },
   "author": "Robby_OrionStark <robbybellamy6@gmail.com>",
   "license": "MIT",
@@ -13,8 +13,5 @@
     "sun calculation",
     "science"
   ],
-  "dependencies": {
-    "tap": "^11.1.2"
-  },
   "readme": "README.md"
 }
