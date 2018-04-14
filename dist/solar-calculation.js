@@ -71,9 +71,11 @@ class Sunpositioning {
     */
     constructor(){}
 
-    /*
-        @function
-        Get Information of sun by giving a date, latitude and longitude
+    /**
+        @param {Date} date user current date
+        @param {number} lat user latitude
+        @param {number} long user longitude
+        @returns {Object} sun postiion, date, observe location, sunrise&sunset, solar transit, hour angle, RA and clientJD
     */
     getSunInformation(date, lat, long) {
         this.CLIENT_JD = this.dateToJD(date);
@@ -100,14 +102,30 @@ class Sunpositioning {
         };
     }
 
+
+    /**
+     * @param {Date} date date
+     * @returns {number} JulianDate of the given date
+     */
     dateToJD(date) {
         return date.valueOf() / ( 1000 * 60 * 60 * 24 ) - 0.5 + JD1970;
     }
 
+
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {number} date from given JulianDate
+     */
     jdToDate(jd) {
         return new Date((jd + 0.5 - JD1970) * ( 1000 * 60 * 60 * 24 ) )
     }
 
+
+    /**
+     * 
+     * @param {number} jd 
+     */
     equation_of_center(jd) {
         /*
             the C4 - C6 are 0, so I just calculate for Coefficient 1 - 3.
@@ -121,6 +139,11 @@ class Sunpositioning {
         };
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {Object} earth mean anomaly in degrees and radiant 
+     */
     earthMeanAnomaly(jd) {
         return {
             degrees: ( 357.5291 + 0.98560028 * ( jd - JD2000 ) ) % 360,
@@ -128,6 +151,11 @@ class Sunpositioning {
         }
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {Object} earth true anomaly in degrees and radiant
+     */
     earthTrueAnomaly(jd) {
         let results = this.equation_of_center(jd).degrees + this.earthMeanAnomaly(jd).degrees;
         return {
@@ -136,6 +164,11 @@ class Sunpositioning {
         }
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {Object} ecliptic Longitude by given JulianDate in degrees and radiant
+     */
     eclipticLongtitude(jd) {
         let true_anomaly = this.earthTrueAnomaly(jd);
         let results = (true_anomaly.degrees + earth_perihelion + 180) % 360;
@@ -145,6 +178,11 @@ class Sunpositioning {
         };
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {Object} rightascension by the given JulianDate in degrees and radiant 
+     */
     rightAscension(jd) {
         let ecliptic_longitude = this.eclipticLongtitude(jd);
         let results = Math.atan2(Math.sin(ecliptic_longitude.rad) * Math.cos(earth_obliquity), Math.cos(ecliptic_longitude.rad));
@@ -154,6 +192,11 @@ class Sunpositioning {
         };
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {Object} declination by the given JulianDate in degrees and radiant 
+     */
     declination(jd) {
         let ecliptic_longitude = this.eclipticLongtitude(jd);
         let results = Math.asin(Math.sin(ecliptic_longitude.rad) * Math.sin(earth_obliquity));
@@ -163,15 +206,30 @@ class Sunpositioning {
         };
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @returns {number} Sideral time by the given JulianDate in degrees
+     */
     sideraltime(jd) {
         let results = (earth_sideral_time.at_zero_long + earth_sideral_time.rate_of_change * (jd - JD2000) - (this.CLIENT_lw)) % 360;
         return results;
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @return {number} HourAngle in degrees by the given Julian date
+     */
     getHourAngle(jd) {
         return this.sideraltime(jd) - this.rightAscension(jd).degrees;
     }
 
+    /**
+     * Please don't call it by itself. You could get this value in other ways like
+     * call the getSunInformation function.
+     * @returns {Object} Return the azimuth and altitude of the sun
+     */
     getSunPosition() {
         return {
             azimuth: {
@@ -190,6 +248,11 @@ class Sunpositioning {
         }
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @return {number} solarTransit in JulianDate 
+     */
     solarTransit(jd) {
         let lw = this.CLIENT_lw;
         let _JD2000 = JD2000
@@ -202,6 +265,11 @@ class Sunpositioning {
         return JDtmp - (0 / 360 ) * 1;
     }
 
+    /**
+     * 
+     * @param {number} jd JulianDate
+     * @return {Object} sunrise and sunset in JulianDate 
+     */
     sunriseandsunset(jd) {
         let jd_from_approx_transit = this.solarTransit(jd);
         let sundeclination = this.declination(jd_from_approx_transit);
