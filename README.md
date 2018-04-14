@@ -51,11 +51,11 @@ earthTrueAnomaly | JulianDate
 eclipticLongtitude | JulianDate
 rightAscension | JulianDate
 declination | JulianDate
-sideraltime | JulianDate
-getHourAngle | JulianDate
+sideraltime | JulianDate, West Longitude
+getHourAngle | JulianDate, West Longitude
 getSunPosition | None, Dont use it
-solarTransit | JulianDate
-sunriseandsunset | JulianDate
+solarTransit | JulianDate. West Longitude
+sunriseandsunset | JulianDate, Latitude, Longitude
 
 ## Example of return object from getSunInformation functions
 Nethereland GMT +1
