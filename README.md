@@ -34,7 +34,8 @@ That's it.
 ```javascript
     const cls = require('calculation-ofsun');
     const myJD = cls.dateToJD(new Date());
-    console.log(cls.solarTransit(myJD));
+    const lw = -96.555324
+    console.log(cls.solarTransit(myJD, lw));
 ```
 You can also call any function except getSunPosition, because it automatically calls by the
 getSunInformation function to get sun position according to your input parameters for getSunInformation.
