@@ -4,7 +4,7 @@
   "description": "Sun calculation based on formula from http://aa.quae.nl/en/reken/zonpositie.html",
   "main": "./dist/solar-calculation.js",
   "scripts": {
-    "test": "No Testing on it"
+    "test": "mocha"
   },
   "author": "Robby_OrionStark <robbybellamy6@gmail.com>",
   "license": "MIT",
@@ -17,5 +17,11 @@
     "type": "git",
     "url": "https://github.com/OrionStark/calculation-of-sun.git"
   },
-  "readme": "README.md"
+  "readme": "README.md",
+  "dependencies": {
+    "mocha": "^5.1.0"
+  },
+  "bugs": {
+    "url": "https://github.com/OrionStark/calculation-of-sun/issues"
+  }
 }

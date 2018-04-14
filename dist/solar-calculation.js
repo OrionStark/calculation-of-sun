@@ -93,10 +93,10 @@ class Sunpositioning {
                 latitude: this.CLIENT_LATITUDE,
                 longitude: this.CLIENT_LONGITUDE
             },
-            sunrise: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD).sunrise).toString(),
-            sunset: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD).sunset).toString(),
-            solar_transit: this.solarTransit(this.CLIENT_JD),
-            hour_angle: this.getHourAngle(this.CLIENT_JD),
+            sunrise: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD, this.CLIENT_LATITUDE, this.CLIENT_LONGITUDE).sunrise).toString(),
+            sunset: this.jdToDate(this.sunriseandsunset(this.CLIENT_JD, this.CLIENT_LATITUDE, this.CLIENT_LONGITUDE).sunset).toString(),
+            solar_transit: this.solarTransit(this.CLIENT_JD, this.CLIENT_lw),
+            hour_angle: this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw),
             right_ascension: this.rightAscension(this.CLIENT_JD),
             clientJD: this.CLIENT_JD,
         };
@@ -210,20 +210,22 @@ class Sunpositioning {
     /**
      * 
      * @param {number} jd JulianDate
+     * @param {number} lw Longitde west
      * @returns {number} Sideral time by the given JulianDate in degrees
      */
-    sideraltime(jd) {
-        let results = (earth_sideral_time.at_zero_long + earth_sideral_time.rate_of_change * (jd - JD2000) - (this.CLIENT_lw)) % 360;
+    sideraltime(jd, lw) {
+        let results = (earth_sideral_time.at_zero_long + earth_sideral_time.rate_of_change * (jd - JD2000) - (lw)) % 360;
         return results;
     }
 
     /**
      * 
      * @param {number} jd JulianDate
+     * @param {number} lw Longitude West
      * @return {number} HourAngle in degrees by the given Julian date
      */
-    getHourAngle(jd) {
-        return this.sideraltime(jd) - this.rightAscension(jd).degrees;
+    getHourAngle(jd, lw) {
+        return this.sideraltime(jd, lw) - this.rightAscension(jd).degrees;
     }
 
     /**
@@ -234,17 +236,17 @@ class Sunpositioning {
     getSunPosition() {
         return {
             azimuth: {
-                rad: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180), 
-                Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - Math.tan(this.declination(this.CLIENT_JD).rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180)),
-                degrees: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180), 
-                Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - 
+                rad: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180), 
+                Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - Math.tan(this.declination(this.CLIENT_JD).rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180)),
+                degrees: Math.atan2(Math.sin(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180), 
+                Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180) * Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) - 
             Math.tan(this.declination(this.CLIENT_JD).rad) * Math.cos(this.CLIENT_LATITUDE * Math.PI / 180)) / (Math.PI / 180)
             },
             altitude: {
                 rad: Math.asin(Math.sin(this.CLIENT_LATITUDE * (Math.PI / 180)) * Math.sin(this.declination(this.CLIENT_JD).rad) + 
-                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180)),
+                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180)),
                 degrees: Math.asin(Math.sin(this.CLIENT_LATITUDE * (Math.PI / 180)) * Math.sin(this.declination(this.CLIENT_JD).rad) + 
-                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD) * Math.PI / 180)) / (Math.PI / 180)
+                Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(this.declination(this.CLIENT_JD).rad) * Math.cos(this.getHourAngle(this.CLIENT_JD, this.CLIENT_lw) * Math.PI / 180)) / (Math.PI / 180)
             }
         }
     }
@@ -252,10 +254,10 @@ class Sunpositioning {
     /**
      * 
      * @param {number} jd JulianDate
+     * @param {number} lw West Longitude
      * @return {number} solarTransit in JulianDate 
      */
-    solarTransit(jd) {
-        let lw = this.CLIENT_lw;
+    solarTransit(jd, lw) {
         let _JD2000 = JD2000
         function nx() { return ((jd - _JD2000 - 0.0009) / 1 - (lw / 360)); }
         let n = Math.round(nx());
@@ -269,13 +271,14 @@ class Sunpositioning {
     /**
      * 
      * @param {number} jd JulianDate
+     * @param {number} latitude Latitude
      * @return {Object} sunrise and sunset in JulianDate 
      */
-    sunriseandsunset(jd) {
-        let jd_from_approx_transit = this.solarTransit(jd);
+    sunriseandsunset(jd, latitude, longitude) {
+        let jd_from_approx_transit = this.solarTransit(jd, -longitude);
         let sundeclination = this.declination(jd_from_approx_transit);
-        let Ht = Math.acos((-0.0146 - Math.sin(this.CLIENT_LATITUDE * Math.PI / 180) * Math.sin(sundeclination.rad)) / 
-                    Math.cos(this.CLIENT_LATITUDE * Math.PI / 180) * Math.cos(sundeclination.rad));
+        let Ht = Math.acos((-0.0146 - Math.sin(latitude * Math.PI / 180) * Math.sin(sundeclination.rad)) / 
+                    Math.cos(latitude * Math.PI / 180) * Math.cos(sundeclination.rad));
         return {
             sunrise: jd_from_approx_transit - ((Ht / (Math.PI / 180)) / 360) * 1,
             sunset: jd_from_approx_transit + ((Ht / (Math.PI / 180)) / 360) * 1
