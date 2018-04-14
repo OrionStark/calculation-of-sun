@@ -124,7 +124,8 @@ class Sunpositioning {
 
     /**
      * 
-     * @param {number} jd 
+     * @param {number} jd Julian Date
+     * @returns {Object} equation of center in degrees and radiant by the given JulianDate
      */
     equation_of_center(jd) {
         /*
