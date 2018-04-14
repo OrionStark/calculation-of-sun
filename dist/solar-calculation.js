@@ -272,6 +272,7 @@ class Sunpositioning {
      * 
      * @param {number} jd JulianDate
      * @param {number} latitude Latitude
+     * @param {number} longitude Longitude
      * @return {Object} sunrise and sunset in JulianDate 
      */
     sunriseandsunset(jd, latitude, longitude) {
