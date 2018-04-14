@@ -1,6 +1,6 @@
 {
   "name": "calculation-ofsun",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Sun calculation based on formula from http://aa.quae.nl/en/reken/zonpositie.html",
   "main": "./dist/solar-calculation.js",
   "scripts": {
