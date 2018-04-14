@@ -1,6 +1,8 @@
 # Calculation of sun
 [![Inline docs](http://inch-ci.org/github/OrionStark/calculation-of-sun.svg?branch=master)](http://inch-ci.org/github/OrionStark/calculation-of-sun)
-[![npm version](https://badge.fury.io/js/calculation-ofsun.svg)](https://badge.fury.io/js/calculation-ofsun)  
+[![npm version](https://badge.fury.io/js/calculation-ofsun.svg)](https://badge.fury.io/js/calculation-ofsun)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/OrionStark/calculation-of-sun/issues)
+[![HitCount](http://hits.dwyl.com/OrionStark/calculation-of-sun.svg)](http://hits.dwyl.com/OrionStark/calculation-of-sun)  
 Sun calculation fully based on formula from http://aa.quae.nl/en/reken/zonpositie.html
 
 ## Warning
