@@ -1,4 +1,5 @@
 # Calculation of sun
+[![Inline docs](http://inch-ci.org/github/OrionStark/calculation-of-sun.svg?branch=master)](http://inch-ci.org/github/OrionStark/calculation-of-sun)
 Sun calculation fully based on formula from http://aa.quae.nl/en/reken/zonpositie.html
 
 ## Warning
