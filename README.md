@@ -7,12 +7,23 @@ This program is not really accurate about the calculation. For the sunrise and s
 ## Install with npm
     npm install calculation-ofsun
 
+## Without npm
+1. Clone this project
+2. Create your new js file
+3. Import the solar-calculation.js to your code. You could find the script in dist directory
+4. Then, have fun
+
+## Attention
+If you didn't understand what I'm saying about how to use it without npm. You could check the main.js.
+That's it.
+
 ## How to Use It
 ```javascript
     const cls = require('calculation-ofsun')
     console.log(cls.getSunInformation(new Date(), 33, 3))
     /* Get Sun Information expected 3 parameters */
     /* Date, lat, long */
+    /* For the other function and it's parameter. You could check on the table below */
 ```
 
 ## How to use another functions that require juliandate as the parameter
@@ -46,18 +57,25 @@ sunriseandsunset | JulianDate
 Nethereland GMT +1
 It'll return time denpend on your local time
 
-    {   sun_position: { azimuth: -77.80678591967518, altitude: 4.0819291879429525 },
-        date: 'Sat Mar 10 2018 13:39:40 GMT+0700 (WIB)', 
-        sunrise: 'Sat Mar 10 2018 13:07:56 GMT+0700 (WIB)',
-        sunset: 'Sun Mar 11 2018 00:36:33 GMT+0700 (WIB)',
-        mean_anomaly: { degrees: 64.65251729583633, rad: 1.1283992965149248 },
-        solar_transit: 2458187.994618933,
-        equation_of_center: { degrees: 1.7458618484586093, rad: 0.03047103754055702 },
-        h: 282.14627224302416,
-        RA: { degrees: -9.80213468943287, rad: -0.17107952405455543 },
-        clientJD: 2458187.777554097,
-        true_anomaly: { degrees: 66.39837914429494, rad: 1.1588703340554818 },
-        sideraltime: 272.3441375535913 }
+    {   sun_position: { 
+            azimuth: -101.53872252647008, 
+            altitude: 57.268164438252526 
+        },
+        date: 'Sat Apr 14 2018 10:16:32 GMT+0700 (WIB)',
+        observe_location: { 
+            latitude: 3.597031, 
+            longitude: 98.678513
+        },
+        sunrise: 'Sat Apr 14 2018 06:21:42 GMT+0700 (WIB)',
+        sunset: 'Sat Apr 14 2018 18:32:54 GMT+0700 (WIB)',
+        solar_transit: 2458222.7272965494,
+        hour_angle: 327.53679257420777,
+        right_ascension: 
+            {   degrees: 22.060782554336377, 
+                rad: 0.38503329113969464 
+            },
+        clientJD: 2458222.6364905904 
+    }
 
 
 

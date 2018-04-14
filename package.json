@@ -1,6 +1,6 @@
 {
   "name": "calculation-ofsun",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Sun calculation based on formula from http://aa.quae.nl/en/reken/zonpositie.html",
   "main": "./dist/solar-calculation.js",
   "scripts": {
@@ -13,5 +13,9 @@
     "sun calculation",
     "science"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OrionStark/calculation-of-sun.git"
+  },
   "readme": "README.md"
 }
